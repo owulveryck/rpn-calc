@@ -203,6 +203,15 @@ html, body {
     grid-template-columns: repeat(6, 1fr);
 }
 
+.hex-row {
+    grid-template-columns: repeat(6, 1fr);
+    display: none;
+}
+
+.hex-row.visible {
+    display: grid;
+}
+
 .enter-row {
     grid-template-columns: 2fr 1fr 1fr 1fr;
 }
@@ -271,6 +280,11 @@ button.enter {
     letter-spacing: 1px;
 }
 button.enter:hover { background: var(--bg-enter-hover); }
+
+button.disabled {
+    opacity: 0.25;
+    pointer-events: none;
+}
 
 button.key-active {
     filter: brightness(1.3);

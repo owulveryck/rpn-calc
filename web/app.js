@@ -3,6 +3,45 @@
 
     var inputBuffer = "";
     var wasmReady = false;
+    var currentBase = "DEC";
+
+    var validDigits = {
+        "DEC": ["0","1","2","3","4","5","6","7","8","9","."],
+        "HEX": ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"],
+        "OCT": ["0","1","2","3","4","5","6","7"],
+        "BIN": ["0","1"]
+    };
+
+    function updateKeyboardForBase(base) {
+        currentBase = base;
+        var allDigitBtns = document.querySelectorAll("#button-grid [data-digit]");
+        var allowed = validDigits[base] || validDigits["DEC"];
+        for (var i = 0; i < allDigitBtns.length; i++) {
+            var btn = allDigitBtns[i];
+            var d = btn.getAttribute("data-digit");
+            if (allowed.indexOf(d) !== -1) {
+                btn.classList.remove("disabled");
+            } else {
+                btn.classList.add("disabled");
+            }
+        }
+        var eexBtn = document.querySelector('[data-action="EEX"]');
+        if (eexBtn) {
+            if (base === "DEC") {
+                eexBtn.classList.remove("disabled");
+            } else {
+                eexBtn.classList.add("disabled");
+            }
+        }
+        var hexRow = document.getElementById("hex-row");
+        if (hexRow) {
+            if (base === "HEX") {
+                hexRow.classList.add("visible");
+            } else {
+                hexRow.classList.remove("visible");
+            }
+        }
+    }
 
     async function loadWasm() {
         var go = new Go();
@@ -62,6 +101,7 @@
         document.getElementById("base-mode").textContent = state.baseMode || "DEC";
         document.getElementById("input-buffer").textContent = inputBuffer;
 
+        updateKeyboardForBase(state.baseMode || "DEC");
         saveState();
     }
 
@@ -98,8 +138,10 @@
 
     function handleDigit(d) {
         if (!wasmReady) return;
+        var allowed = validDigits[currentBase] || validDigits["DEC"];
+        if (allowed.indexOf(d.toUpperCase()) === -1) return;
         if (d === "." && inputBuffer.indexOf(".") !== -1) return;
-        inputBuffer += d;
+        inputBuffer += d.toUpperCase();
         document.getElementById("input-buffer").textContent = inputBuffer;
     }
 
@@ -192,6 +234,9 @@
         if (key >= "0" && key <= "9") {
             handleDigit(key);
             btn = document.querySelector('[data-digit="' + key + '"]');
+        } else if (currentBase === "HEX" && key.length === 1 && "abcdefABCDEF".indexOf(key) !== -1) {
+            handleDigit(key.toUpperCase());
+            btn = document.querySelector('[data-digit="' + key.toUpperCase() + '"]');
         } else if (key === ".") {
             handleDigit(".");
             btn = document.querySelector('[data-digit="."]');
@@ -245,6 +290,7 @@
         var modes = ["DEC", "HEX", "OCT", "BIN"];
         var current = document.getElementById("base-mode").textContent;
         var next = modes[(modes.indexOf(current) + 1) % modes.length];
+        inputBuffer = "";
         render(rpnSetBaseMode(next));
     });
 
