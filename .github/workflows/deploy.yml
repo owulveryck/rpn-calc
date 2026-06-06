@@ -26,6 +26,9 @@ jobs:
       - name: Run tests
         run: make test
 
+      - name: Stamp commit hash
+        run: sed -i "s/__COMMIT__/${GITHUB_SHA::7}/g" web/index.html
+
       - name: Build WASM
         run: make build
 

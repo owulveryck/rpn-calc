@@ -12,6 +12,7 @@
 <body>
     <div id="calculator">
         <div id="status-bar">
+            <a id="commit-ref" href="https://github.com/owulveryck/rpn-calc/commit/__COMMIT__" target="_blank" rel="noopener noreferrer">__COMMIT__</a>
             <button id="angle-mode" class="status-btn">DEG</button>
             <button id="base-mode" class="status-btn">DEC</button>
         </div>
@@ -48,12 +49,12 @@
             </div>
 
             <div class="btn-row stack-row">
-                <button data-action="SWAP" class="stack">SWAP</button>
-                <button data-action="DUP" class="stack">DUP</button>
-                <button data-action="DROP" class="stack">DROP</button>
-                <button data-action="ROT" class="stack">ROT</button>
-                <button data-action="OVER" class="stack">OVER</button>
-                <button data-action="UNDO" class="stack">UNDO</button>
+                <button data-action="SWAP" class="stack" data-tooltip="Échanger x ↔ y">SWAP</button>
+                <button data-action="DUP" class="stack" data-tooltip="Dupliquer x">DUP</button>
+                <button data-action="DROP" class="stack" data-tooltip="Supprimer x">DROP</button>
+                <button data-action="ROT" class="stack" data-tooltip="Rotation z → x">ROT</button>
+                <button data-action="OVER" class="stack" data-tooltip="Copier y → x">OVER</button>
+                <button data-action="UNDO" class="stack" data-tooltip="Annuler">UNDO</button>
             </div>
 
             <div class="btn-row hex-row" id="hex-row">
