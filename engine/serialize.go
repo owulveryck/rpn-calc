@@ -20,7 +20,7 @@ type serializedState struct {
 func (c *Calculator) Serialize() string {
 	sv := make([]serializedValue, c.stack.Depth())
 	for i, v := range c.stack.values {
-		sv[i] = serializedValue{Type: "real", Val: fmt.Sprintf("%g", v.Float64())}
+		sv[i] = serializedValue{Type: "real", Val: v.BigFloat().Text('g', 80)}
 	}
 	s := serializedState{
 		Stack:     sv,

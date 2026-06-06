@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"math/big"
 	"strconv"
 	"strings"
 )
@@ -13,6 +14,7 @@ var ErrInvalidNumber = errors.New("invalid number")
 type Value interface {
 	String() string
 	Float64() float64
+	BigFloat() *big.Float
 	IsComplex() bool
 	Complex128() complex128
 	StringInBase(base BaseMode) string
@@ -41,11 +43,21 @@ func (b BaseMode) String() string {
 }
 
 type RealValue struct {
-	val float64
+	val *big.Float
 }
 
 func NewRealValue(v float64) RealValue {
-	return RealValue{val: v}
+	bf := new(big.Float).SetPrec(defaultPrec)
+	if math.IsNaN(v) {
+		bf.SetFloat64(0)
+	} else {
+		bf.SetFloat64(v)
+	}
+	return RealValue{val: bf}
+}
+
+func newRealValueFromBig(v *big.Float) RealValue {
+	return RealValue{val: new(big.Float).SetPrec(defaultPrec).Copy(v)}
 }
 
 func ParseValue(s string) (Value, error) {
@@ -53,7 +65,7 @@ func ParseValue(s string) (Value, error) {
 	if s == "" {
 		return nil, ErrInvalidNumber
 	}
-	f, err := strconv.ParseFloat(s, 64)
+	f, _, err := new(big.Float).SetPrec(defaultPrec).Parse(s, 10)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrInvalidNumber, s)
 	}
@@ -61,14 +73,23 @@ func ParseValue(s string) (Value, error) {
 }
 
 func (v RealValue) String() string {
-	if v.val == math.Trunc(v.val) && !math.IsInf(v.val, 0) && !math.IsNaN(v.val) && math.Abs(v.val) < 1e15 {
-		return strconv.FormatFloat(v.val, 'f', -1, 64)
+	f, _ := v.val.Float64()
+	if !math.IsInf(f, 0) {
+		if f == math.Trunc(f) && math.Abs(f) < 1e15 {
+			return strconv.FormatFloat(f, 'f', -1, 64)
+		}
+		return strconv.FormatFloat(f, 'g', -1, 64)
 	}
-	return strconv.FormatFloat(v.val, 'g', -1, 64)
+	return v.val.Text('g', 15)
 }
 
 func (v RealValue) Float64() float64 {
-	return v.val
+	f, _ := v.val.Float64()
+	return f
+}
+
+func (v RealValue) BigFloat() *big.Float {
+	return new(big.Float).SetPrec(defaultPrec).Copy(v.val)
 }
 
 func (v RealValue) IsComplex() bool {
@@ -76,11 +97,11 @@ func (v RealValue) IsComplex() bool {
 }
 
 func (v RealValue) Complex128() complex128 {
-	return complex(v.val, 0)
+	return complex(v.Float64(), 0)
 }
 
 func (v RealValue) StringInBase(base BaseMode) string {
-	n := int64(v.val)
+	n := int64(v.Float64())
 	switch base {
 	case BaseHex:
 		return fmt.Sprintf("#%X", n)

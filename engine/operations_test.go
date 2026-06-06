@@ -374,3 +374,27 @@ func TestOperationUnderflow(t *testing.T) {
 		})
 	}
 }
+
+func TestLnExpRoundTrip(t *testing.T) {
+	c := NewCalculator()
+	c.Enter("85")
+	c.Execute("LN")
+	c.Execute("LN")
+	c.Execute("LN")
+	c.Execute("EXP")
+	c.Execute("EXP")
+	s := parseState(t, c.Execute("EXP"))
+	if s.Stack[0] != "85" {
+		t.Errorf("85 -> ln -> ln -> ln -> exp -> exp -> exp = %s, want 85", s.Stack[0])
+	}
+}
+
+func TestSqrtSqRoundTrip(t *testing.T) {
+	c := NewCalculator()
+	c.Enter("85")
+	c.Execute("SQRT")
+	s := parseState(t, c.Execute("SQ"))
+	if s.Stack[0] != "85" {
+		t.Errorf("sq(sqrt(85)) = %s, want 85", s.Stack[0])
+	}
+}

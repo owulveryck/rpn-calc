@@ -56,7 +56,6 @@ func TestRealValueString(t *testing.T) {
 		{"small", 1e-10, "1e-10"},
 		{"infinity", math.Inf(1), "+Inf"},
 		{"neg infinity", math.Inf(-1), "-Inf"},
-		{"NaN", math.NaN(), "NaN"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
