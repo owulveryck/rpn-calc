@@ -1,4 +1,4 @@
-var CACHE_NAME = "rpn-v10";
+var CACHE_NAME = "rpn-v11";
 var ASSETS = [
     ".",
     "index.html",
