@@ -95,14 +95,15 @@ func (c *Calculator) GetStateJSON() string {
 
 func (c *Calculator) Enter(input string) string {
 	c.errorMsg = ""
-	v, err := ParseValue(input)
+	v, err := ParseValueInBase(input, c.baseMode)
 	if err != nil {
 		c.errorMsg = err.Error()
 		return c.GetStateJSON()
 	}
 	c.saveUndo()
-	c.stack.Push(v)
-	c.addHistory("ENTER " + v.String())
+	ev := NewExprValue(literalNode(v.BigFloat()))
+	c.stack.Push(ev)
+	c.addHistory("ENTER " + ev.String())
 	return c.GetStateJSON()
 }
 
