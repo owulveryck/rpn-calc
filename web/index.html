@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a2f3a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>RPN Calculator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div id="calculator">
+        <div id="status-bar">
+            <span id="angle-mode">DEG</span>
+            <span id="base-mode">DEC</span>
+        </div>
+        <div id="display-area">
+            <div id="history-display">
+                <div id="history-lines"></div>
+            </div>
+            <div id="stack-display">
+                <div id="stack-lines"></div>
+            </div>
+        </div>
+        <div id="input-line">
+            <span id="input-buffer"></span>
+            <span id="cursor">_</span>
+        </div>
+
+        <div id="button-grid">
+            <div class="btn-row sci-row">
+                <button data-action="SIN" class="fn">SIN</button>
+                <button data-action="COS" class="fn">COS</button>
+                <button data-action="TAN" class="fn">TAN</button>
+                <button data-action="SQRT" class="fn">&radic;x</button>
+                <button data-action="Y^X" class="fn">y<sup>x</sup></button>
+                <button data-action="INV" class="fn">1/x</button>
+            </div>
+
+            <div class="btn-row sci-row">
+                <button data-action="LOG" class="fn">LOG</button>
+                <button data-action="LN" class="fn">LN</button>
+                <button data-action="EXP" class="fn">e<sup>x</sup></button>
+                <button data-action="10^X" class="fn">10<sup>x</sup></button>
+                <button data-action="SQ" class="fn">x&sup2;</button>
+                <button data-action="FACT" class="fn">n!</button>
+            </div>
+
+            <div class="btn-row stack-row">
+                <button data-action="SWAP" class="stack">SWAP</button>
+                <button data-action="DUP" class="stack">DUP</button>
+                <button data-action="DROP" class="stack">DROP</button>
+                <button data-action="ROT" class="stack">ROT</button>
+                <button data-action="OVER" class="stack">OVER</button>
+                <button data-action="UNDO" class="stack">UNDO</button>
+            </div>
+
+            <div class="btn-row enter-row">
+                <button data-action="ENTER" class="enter" id="btn-enter">ENTER</button>
+                <button data-action="NEG" class="edit">+/-</button>
+                <button data-action="EEX" class="edit">EEX</button>
+                <button data-action="BACKSPACE" class="edit">&larr;</button>
+            </div>
+
+            <div class="btn-row num-row">
+                <button data-digit="7" class="digit">7</button>
+                <button data-digit="8" class="digit">8</button>
+                <button data-digit="9" class="digit">9</button>
+                <button data-action="/" class="op">&divide;</button>
+            </div>
+
+            <div class="btn-row num-row">
+                <button data-digit="4" class="digit">4</button>
+                <button data-digit="5" class="digit">5</button>
+                <button data-digit="6" class="digit">6</button>
+                <button data-action="*" class="op">&times;</button>
+            </div>
+
+            <div class="btn-row num-row">
+                <button data-digit="1" class="digit">1</button>
+                <button data-digit="2" class="digit">2</button>
+                <button data-digit="3" class="digit">3</button>
+                <button data-action="-" class="op">&minus;</button>
+            </div>
+
+            <div class="btn-row num-row">
+                <button data-digit="0" class="digit">0</button>
+                <button data-digit="." class="digit">.</button>
+                <button data-action="CLEAR" class="edit">CLR</button>
+                <button data-action="+" class="op">+</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="wasm_exec.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
