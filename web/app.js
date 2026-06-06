@@ -232,13 +232,6 @@
         }
     });
 
-    // Prevent zoom on double-tap
-    document.addEventListener("touchend", function (e) {
-        if (e.target.closest("button")) {
-            e.preventDefault();
-        }
-    }, { passive: false });
-
     if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("sw.js");
     }
