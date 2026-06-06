@@ -232,6 +232,22 @@
         }
     });
 
+    document.getElementById("angle-mode").addEventListener("click", function () {
+        if (!wasmReady) return;
+        var modes = ["DEG", "RAD", "GRAD"];
+        var current = document.getElementById("angle-mode").textContent;
+        var next = modes[(modes.indexOf(current) + 1) % modes.length];
+        render(rpnSetAngleMode(next));
+    });
+
+    document.getElementById("base-mode").addEventListener("click", function () {
+        if (!wasmReady) return;
+        var modes = ["DEC", "HEX", "OCT", "BIN"];
+        var current = document.getElementById("base-mode").textContent;
+        var next = modes[(modes.indexOf(current) + 1) % modes.length];
+        render(rpnSetBaseMode(next));
+    });
+
     if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("sw.js");
     }
