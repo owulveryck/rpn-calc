@@ -9,8 +9,11 @@ import (
 	"strings"
 )
 
+// ErrInvalidNumber est retourné quand une chaîne ne peut pas être interprétée comme un nombre valide.
 var ErrInvalidNumber = errors.New("invalid number")
 
+// Value est l'interface commune à toutes les valeurs manipulées par la calculatrice.
+// Elle permet d'obtenir des représentations numériques en différentes précisions et bases.
 type Value interface {
 	String() string
 	Float64() float64
@@ -20,15 +23,17 @@ type Value interface {
 	StringInBase(base BaseMode) string
 }
 
+// BaseMode représente la base numérique utilisée pour l'affichage des valeurs.
 type BaseMode int
 
 const (
-	BaseDec BaseMode = iota
-	BaseHex
-	BaseOct
-	BaseBin
+	BaseDec BaseMode = iota // Décimal
+	BaseHex                 // Hexadécimal
+	BaseOct                 // Octal
+	BaseBin                 // Binaire
 )
 
+// String retourne la représentation textuelle de la base ("DEC", "HEX", "OCT" ou "BIN").
 func (b BaseMode) String() string {
 	switch b {
 	case BaseHex:
@@ -42,10 +47,12 @@ func (b BaseMode) String() string {
 	}
 }
 
+// RealValue représente une valeur réelle en précision arbitraire via big.Float.
 type RealValue struct {
 	val *big.Float
 }
 
+// NewRealValue crée une RealValue à partir d'un float64.
 func NewRealValue(v float64) RealValue {
 	bf := new(big.Float).SetPrec(defaultPrec)
 	if math.IsNaN(v) {
@@ -56,6 +63,7 @@ func NewRealValue(v float64) RealValue {
 	return RealValue{val: bf}
 }
 
+// ParseValue analyse une chaîne en base 10 et retourne la Value correspondante.
 func ParseValue(s string) (Value, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
@@ -68,6 +76,7 @@ func ParseValue(s string) (Value, error) {
 	return RealValue{val: f}, nil
 }
 
+// ParseValueInBase analyse une chaîne dans la base numérique spécifiée et retourne la Value correspondante.
 func ParseValueInBase(s string, base BaseMode) (Value, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
@@ -103,27 +112,33 @@ func formatFloat(bf *big.Float) string {
 	return bf.Text('g', 15)
 }
 
+// String retourne la représentation décimale de la valeur.
 func (v RealValue) String() string {
 	return formatFloat(v.val)
 }
 
+// Float64 retourne la valeur convertie en float64.
 func (v RealValue) Float64() float64 {
 	f, _ := v.val.Float64()
 	return f
 }
 
+// BigFloat retourne une copie de la valeur interne en big.Float.
 func (v RealValue) BigFloat() *big.Float {
 	return new(big.Float).SetPrec(defaultPrec).Copy(v.val)
 }
 
+// IsComplex retourne false car RealValue ne représente pas un nombre complexe.
 func (v RealValue) IsComplex() bool {
 	return false
 }
 
+// Complex128 retourne la valeur comme nombre complexe avec partie imaginaire nulle.
 func (v RealValue) Complex128() complex128 {
 	return complex(v.Float64(), 0)
 }
 
+// StringInBase retourne la représentation de la valeur dans la base spécifiée.
 func (v RealValue) StringInBase(base BaseMode) string {
 	n := int64(v.Float64())
 	switch base {
@@ -138,35 +153,44 @@ func (v RealValue) StringInBase(base BaseMode) string {
 	}
 }
 
+// ExprValue représente une valeur calculée définie par un arbre d'expressions.
+// La valeur numérique est évaluée paresseusement à partir du graphe d'opérations.
 type ExprValue struct {
 	node *ExprNode
 }
 
+// NewExprValue crée une ExprValue à partir d'un noeud d'expression.
 func NewExprValue(node *ExprNode) ExprValue {
 	return ExprValue{node: node}
 }
 
+// String évalue l'expression et retourne sa représentation décimale.
 func (v ExprValue) String() string {
 	return formatFloat(v.node.evaluate())
 }
 
+// Float64 évalue l'expression et retourne le résultat en float64.
 func (v ExprValue) Float64() float64 {
 	f, _ := v.node.evaluate().Float64()
 	return f
 }
 
+// BigFloat évalue l'expression et retourne le résultat en big.Float.
 func (v ExprValue) BigFloat() *big.Float {
 	return v.node.evaluate()
 }
 
+// IsComplex retourne false car ExprValue ne représente pas un nombre complexe.
 func (v ExprValue) IsComplex() bool {
 	return false
 }
 
+// Complex128 évalue l'expression et retourne le résultat comme nombre complexe.
 func (v ExprValue) Complex128() complex128 {
 	return complex(v.Float64(), 0)
 }
 
+// StringInBase évalue l'expression et retourne le résultat dans la base spécifiée.
 func (v ExprValue) StringInBase(base BaseMode) string {
 	n := int64(v.Float64())
 	switch base {

@@ -5,6 +5,7 @@ import (
 	"math/big"
 )
 
+// ErrDivisionByZero est retourné quand une division ou un inverse par zéro est tenté.
 var ErrDivisionByZero = errors.New("division by zero")
 
 type opFunc func(c *Calculator) error
@@ -279,7 +280,13 @@ func opDup(c *Calculator) error   { return c.stack.Dup() }
 func opDrop(c *Calculator) error  { return c.stack.Drop() }
 func opOver(c *Calculator) error  { return c.stack.Over() }
 func opRot(c *Calculator) error   { return c.stack.Rot() }
-func opClear(c *Calculator) error { c.stack.Clear(); return nil }
+func opClear(c *Calculator) error {
+	c.stack.Clear()
+	c.history = nil
+	c.undoStack = nil
+	c.lastArgs = nil
+	return nil
+}
 
 func opDepth(c *Calculator) error {
 	c.stack.Push(NewExprValue(literalFloat64Node(float64(c.stack.Depth()))))

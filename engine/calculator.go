@@ -1,3 +1,6 @@
+// Package engine implémente un moteur de calculatrice RPN (Reverse Polish Notation)
+// avec arithmétique en précision arbitraire, fonctions trigonométriques,
+// logarithmiques et de manipulation de pile.
 package engine
 
 import (
@@ -5,14 +8,16 @@ import (
 	"fmt"
 )
 
+// AngleMode représente l'unité angulaire utilisée pour les fonctions trigonométriques.
 type AngleMode int
 
 const (
-	AngleRad AngleMode = iota
-	AngleDeg
-	AngleGrad
+	AngleRad  AngleMode = iota // Radians
+	AngleDeg                   // Degrés
+	AngleGrad                  // Gradians
 )
 
+// String retourne la représentation textuelle du mode angulaire ("RAD", "DEG" ou "GRAD").
 func (m AngleMode) String() string {
 	switch m {
 	case AngleDeg:
@@ -24,6 +29,8 @@ func (m AngleMode) String() string {
 	}
 }
 
+// Calculator est le moteur principal de la calculatrice RPN.
+// Il gère une pile de valeurs, un historique d'annulation et un journal des opérations.
 type Calculator struct {
 	stack     Stack
 	undoStack [][]Value
@@ -34,10 +41,12 @@ type Calculator struct {
 	history   []HistoryEntry
 }
 
+// HistoryEntry représente une entrée dans l'historique des opérations de la calculatrice.
 type HistoryEntry struct {
 	Expression string `json:"expr"`
 }
 
+// State représente l'état complet de la calculatrice, sérialisable en JSON.
 type State struct {
 	Stack     []string       `json:"stack"`
 	Depth     int            `json:"depth"`
@@ -50,6 +59,7 @@ type State struct {
 const maxUndo = 100
 const maxHistory = 50
 
+// NewCalculator crée une nouvelle calculatrice RPN avec le mode degrés et la base décimale par défaut.
 func NewCalculator() *Calculator {
 	return &Calculator{
 		angleMode: AngleDeg,
@@ -72,6 +82,7 @@ func (c *Calculator) addHistory(expr string) {
 	}
 }
 
+// GetState retourne l'état actuel de la calculatrice sous forme de struct State.
 func (c *Calculator) GetState() State {
 	h := c.history
 	if h == nil {
@@ -87,12 +98,15 @@ func (c *Calculator) GetState() State {
 	}
 }
 
+// GetStateJSON retourne l'état actuel de la calculatrice sous forme de chaîne JSON.
 func (c *Calculator) GetStateJSON() string {
 	s := c.GetState()
 	b, _ := json.Marshal(s)
 	return string(b)
 }
 
+// Enter analyse la chaîne input comme une valeur numérique et l'empile.
+// Retourne l'état JSON après l'opération.
 func (c *Calculator) Enter(input string) string {
 	c.errorMsg = ""
 	v, err := ParseValueInBase(input, c.baseMode)
@@ -107,6 +121,8 @@ func (c *Calculator) Enter(input string) string {
 	return c.GetStateJSON()
 }
 
+// Execute exécute l'opération nommée op sur la pile.
+// Retourne l'état JSON après l'opération.
 func (c *Calculator) Execute(op string) string {
 	c.errorMsg = ""
 	info, ok := operations[op]
@@ -172,6 +188,8 @@ func (c *Calculator) formatHistory(info opInfo, argX, argY string) string {
 	}
 }
 
+// Undo annule la dernière opération en restaurant l'état précédent de la pile.
+// Retourne l'état JSON après l'annulation.
 func (c *Calculator) Undo() string {
 	c.errorMsg = ""
 	if len(c.undoStack) == 0 {
@@ -184,6 +202,8 @@ func (c *Calculator) Undo() string {
 	return c.GetStateJSON()
 }
 
+// Last réempile les derniers arguments consommés par une opération.
+// Retourne l'état JSON après l'opération.
 func (c *Calculator) Last() string {
 	c.errorMsg = ""
 	if len(c.lastArgs) == 0 {
@@ -197,6 +217,8 @@ func (c *Calculator) Last() string {
 	return c.GetStateJSON()
 }
 
+// SetAngleMode change le mode angulaire de la calculatrice ("DEG", "RAD" ou "GRAD").
+// Retourne l'état JSON après le changement.
 func (c *Calculator) SetAngleMode(mode string) string {
 	switch mode {
 	case "DEG":
@@ -209,6 +231,8 @@ func (c *Calculator) SetAngleMode(mode string) string {
 	return c.GetStateJSON()
 }
 
+// SetBaseMode change la base numérique d'affichage ("DEC", "HEX", "OCT" ou "BIN").
+// Retourne l'état JSON après le changement.
 func (c *Calculator) SetBaseMode(mode string) string {
 	switch mode {
 	case "HEX":

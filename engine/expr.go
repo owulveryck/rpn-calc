@@ -6,37 +6,39 @@ import (
 	"sync"
 )
 
+// ExprOp identifie une opération dans l'arbre d'expressions.
 type ExprOp int
 
 const (
-	OpLiteral ExprOp = iota
-	OpPi
-	OpE
-	OpAdd
-	OpSub
-	OpMul
-	OpDiv
-	OpNeg
-	OpInv
-	OpSin
-	OpCos
-	OpTan
-	OpAsin
-	OpAcos
-	OpAtan
-	OpLog
-	OpLn
-	OpExp
-	Op10X
-	OpPow
-	OpSqrt
-	OpSq
-	OpFact
-	OpAbs
-	OpMin
-	OpMax
+	OpLiteral ExprOp = iota // Valeur littérale
+	OpPi                    // Constante pi
+	OpE                     // Constante e (nombre d'Euler)
+	OpAdd                   // Addition
+	OpSub                   // Soustraction
+	OpMul                   // Multiplication
+	OpDiv                   // Division
+	OpNeg                   // Négation
+	OpInv                   // Inverse (1/x)
+	OpSin                   // Sinus
+	OpCos                   // Cosinus
+	OpTan                   // Tangente
+	OpAsin                  // Arc sinus
+	OpAcos                  // Arc cosinus
+	OpAtan                  // Arc tangente
+	OpLog                   // Logarithme décimal
+	OpLn                    // Logarithme naturel
+	OpExp                   // Exponentielle (e^x)
+	Op10X                   // Puissance de 10 (10^x)
+	OpPow                   // Puissance (y^x)
+	OpSqrt                  // Racine carrée
+	OpSq                    // Carré (x^2)
+	OpFact                  // Factorielle
+	OpAbs                   // Valeur absolue
+	OpMin                   // Minimum
+	OpMax                   // Maximum
 )
 
+// String retourne le nom textuel de l'opération.
 func (op ExprOp) String() string {
 	switch op {
 	case OpLiteral:
@@ -155,6 +157,8 @@ func parseExprOp(s string) (ExprOp, bool) {
 	}
 }
 
+// ExprNode représente un noeud dans l'arbre d'expressions de la calculatrice.
+// Chaque noeud contient une opération, des enfants optionnels et un cache de résultat.
 type ExprNode struct {
 	op       ExprOp
 	children []*ExprNode

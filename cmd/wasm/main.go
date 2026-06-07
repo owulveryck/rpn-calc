@@ -1,5 +1,9 @@
 //go:build js && wasm
 
+// Point d'entrée WebAssembly de la calculatrice RPN.
+// Expose les fonctions de la calculatrice comme fonctions globales JavaScript
+// (rpnEnter, rpnExecute, rpnGetState, rpnUndo, rpnLast, rpnSerialize, rpnRestore,
+// rpnSetAngleMode, rpnSetBaseMode).
 package main
 
 import (

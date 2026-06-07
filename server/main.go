@@ -1,5 +1,8 @@
 //go:build !js
 
+// Serveur HTTP statique pour l'interface web de la calculatrice RPN.
+// Sert les fichiers du répertoire web/ sur le port spécifié par la variable
+// d'environnement PORT (8080 par défaut).
 package main
 
 import (

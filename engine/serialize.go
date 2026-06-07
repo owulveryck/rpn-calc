@@ -75,6 +75,8 @@ func deserializeNode(sn *serializedNode) (*ExprNode, error) {
 	return node, nil
 }
 
+// Serialize retourne l'état complet de la calculatrice sous forme de chaîne JSON,
+// incluant les arbres d'expressions pour permettre une restauration fidèle.
 func (c *Calculator) Serialize() string {
 	sv := make([]serializedValue, c.stack.Depth())
 	for i, v := range c.stack.values {
@@ -97,6 +99,8 @@ func (c *Calculator) Serialize() string {
 	return string(b)
 }
 
+// Restore reconstruit l'état de la calculatrice à partir d'une chaîne JSON
+// produite par Serialize. L'historique d'annulation est réinitialisé.
 func (c *Calculator) Restore(data string) error {
 	var s serializedState
 	if err := json.Unmarshal([]byte(data), &s); err != nil {
